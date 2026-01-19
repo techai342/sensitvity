@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Sensitivity Hub - 2X Boosted</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pro Sensitivity Hub - AI Powered</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         
         body {
             background-color: #0a0a0c;
@@ -64,6 +67,152 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* AI Generator Styles */
+        .gradient-text {
+            background: linear-gradient(90deg, #ff2e63, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        #resultArea, #chatSection {
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-container {
+            height: 350px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            word-wrap: break-word;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .ff-slider-bg {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 46, 99, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 46, 99, 0.3);
+            color: #ff2e63;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 46, 99, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 46, 99, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 46, 99, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 15px;
+                right: 15px;
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            .header-title { 
+                font-size: 1.875rem; 
+                margin-top: 20px;
+            }
+            
+            .chat-container { 
+                height: 300px; 
+            }
+            
+            input, button { 
+                font-size: 14px !important; 
+            }
+            
+            #sensitivityChart {
+                height: 250px !important;
+            }
+            
+            .glass-card {
+                padding: 15px !important;
+            }
+            
+            #ai-resultArea .glass-card {
+                padding: 10px !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .back-btn {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .header-title { 
+                font-size: 1.5rem; 
+            }
+            
+            main {
+                padding-top: 50px !important;
+            }
+            
+            .brands-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .brands-grid h3 {
+                font-size: 16px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .back-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
+            .brands-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            #models-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -72,71 +221,141 @@
 </head>
 <body class="min-h-screen">
 
+    <!-- Back Button -->
+    <a href="https://eman.zone.id/" class="back-btn" target="_blank">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Eman Zone</span>
+    </a>
+
     <!-- Header -->
     <header class="py-6 px-4 border-b border-white/10 text-center">
-        <h1 class="text-4xl font-bold neon-text font-['Orbitron'] tracking-widest text-[#ff2e63]">
-            SENSITIVITY HUB
+        <h1 class="text-4xl font-bold neon-text font-['Orbitron'] tracking-widest text-[#ff2e63] header-title">
+            PRO SENSITIVITY HUB
         </h1>
-        <p class="text-gray-400 mt-2 font-bold uppercase tracking-widest">2X Boosted Settings</p>
+        <p class="text-gray-400 mt-2 font-bold uppercase tracking-widest">AI Powered + Database Settings</p>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 mb-20">
+    <main class="max-w-4xl mx-auto p-4 mb-20 space-y-8">
         
-        <!-- Step 1: Select Brand -->
-        <section id="brand-selection" class="tab-anim">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <i class="fas fa-mobile-alt text-[#ff2e63]"></i> Choose Brand
+        <!-- AI Generator Section -->
+        <section class="glass-card rounded-3xl p-5 shadow-2xl border border-[#ff2e63]/20">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-robot text-[#ff2e63]"></i> 
+                <span class="gradient-text">AI Pro Sensitivity Finder</span>
             </h2>
-            <div id="brands-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Brands dynamically injected -->
+            <div class="flex flex-col gap-3">
+                <div class="relative flex-grow">
+                    <i class="fas fa-mobile-screen-button absolute left-4 top-1/2 -translate-y-1/2 text-[#ff2e63]"></i>
+                    <input 
+                        type="text" 
+                        id="deviceInput" 
+                        placeholder="Enter your device model for AI settings..." 
+                        class="w-full bg-slate-900/60 border border-slate-700 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-[#ff2e63] text-white placeholder-slate-500 transition-all"
+                    >
+                </div>
+                <button 
+                    onclick="generateWithAI()" 
+                    id="genBtn"
+                    class="btn-primary text-white px-6 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 active:scale-95"
+                >
+                    <span>Generate AI Settings</span>
+                    <i class="fas fa-bolt-lightning"></i>
+                </button>
             </div>
-        </section>
 
-        <!-- Step 2: Select Model -->
-        <section id="model-selection" class="hidden tab-anim">
-            <button onclick="showBrands()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
-                <i class="fas fa-arrow-left"></i> Back to Brands
-            </button>
-            <h2 id="brand-title" class="text-2xl font-bold mb-6 text-[#ff2e63]">Models</h2>
-            <div id="models-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <!-- Models dynamically injected -->
-            </div>
-        </section>
-
-        <!-- Step 3: Sensitivity Result -->
-        <section id="result-view" class="hidden tab-anim">
-            <button onclick="showModels()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
-                <i class="fas fa-arrow-left"></i> Back to Models
-            </button>
-            
-            <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ff2e63]">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 id="result-model-name" class="text-3xl font-bold text-white uppercase">Device Name</h2>
-                        <p id="result-brand-name" class="text-[#ff2e63] font-bold tracking-widest text-sm">BRAND NAME</p>
+            <!-- AI Loading -->
+            <div id="ai-loading" class="hidden mt-4">
+                <div class="glass-card p-8 rounded-3xl text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-12 h-12 border-4 border-[#ff2e63] border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                    <button onclick="copyToClipboard()" class="bg-[#ff2e63]/20 hover:bg-[#ff2e63]/40 p-3 rounded-lg transition text-[#ff2e63]" title="Copy Table">
-                        <i class="fas fa-copy text-xl"></i>
-                    </button>
+                    <p class="text-[#ff2e63] font-medium animate-pulse">AI is calculating 200% power...</p>
+                </div>
+            </div>
+
+            <!-- AI Result Area -->
+            <div id="ai-resultArea" class="hidden space-y-4 mt-4">
+                <div class="glass-card rounded-3xl p-5 shadow-xl border border-[#ff2e63]/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold flex items-center gap-2 text-[#ff2e63]">
+                            <i class="fas fa-chart-simple"></i> 
+                            <span id="ai-resultTitle">AI Generated Settings</span>
+                        </h3>
+                        <button onclick="copyAIToClipboard()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors flex items-center gap-2">
+                            <i class="fas fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                    <div class="relative h-[300px] w-full ff-slider-bg rounded-2xl p-2 sm:p-4">
+                        <canvas id="sensitivityChart"></canvas>
+                    </div>
                 </div>
 
-                <div id="stats-container" class="space-y-6">
-                    <!-- Progress bars injected here -->
-                </div>
-
-                <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center gap-3">
-                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                    <p class="text-gray-300 font-bold uppercase text-xs tracking-widest">
-                        2X Optimized High-Performance Settings
-                    </p>
-                </div>
+                <!-- AI Stats Grid -->
+                <div id="ai-statsGrid" class="grid grid-cols-2 gap-3 sm:gap-4"></div>
             </div>
         </section>
 
+        <!-- Database Sensitivity Section -->
+        <div class="border-t border-white/10 pt-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-database text-[#ff2e63]"></i> Database Sensitivity (Manual Select)
+            </h2>
+            
+            <!-- Step 1: Select Brand -->
+            <section id="brand-selection" class="tab-anim">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-mobile-alt text-[#ff2e63]"></i> Choose Brand
+                </h3>
+                <div id="brands-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 brands-grid">
+                    <!-- Brands dynamically injected -->
+                </div>
+            </section>
+
+            <!-- Step 2: Select Model -->
+            <section id="model-selection" class="hidden tab-anim">
+                <button onclick="showBrands()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
+                    <i class="fas fa-arrow-left"></i> Back to Brands
+                </button>
+                <h3 id="brand-title" class="text-xl font-bold mb-6 text-[#ff2e63]">Select Model</h3>
+                <div id="models-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Models dynamically injected -->
+                </div>
+            </section>
+
+            <!-- Step 3: Sensitivity Result -->
+            <section id="result-view" class="hidden tab-anim">
+                <button onclick="showModels()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
+                    <i class="fas fa-arrow-left"></i> Back to Models
+                </button>
+                
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ff2e63]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 id="result-model-name" class="text-3xl font-bold text-white uppercase">Device Name</h3>
+                            <p id="result-brand-name" class="text-[#ff2e63] font-bold tracking-widest text-sm">BRAND NAME</p>
+                        </div>
+                        <button onclick="copyToClipboard()" class="bg-[#ff2e63]/20 hover:bg-[#ff2e63]/40 p-3 rounded-lg transition text-[#ff2e63]" title="Copy Table">
+                            <i class="fas fa-copy text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div id="stats-container" class="space-y-6">
+                        <!-- Progress bars injected here -->
+                    </div>
+
+                    <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center gap-3">
+                        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                        <p class="text-gray-300 font-bold uppercase text-xs tracking-widest">
+                            2X Optimized High-Performance Settings
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
-    <!-- Unlock Modal -->
-    <div id="unlock-modal" class="fixed inset-0 flex items-center justify-center p-4">
+    <!-- Unlock Modal for Database -->
+    <div id="unlock-modal" class="fixed inset-0 flex items-center justify-center p-4 z-50">
         <div class="bg-[#16161a] p-8 rounded-3xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(255,46,99,0.2)] border border-white/10">
             <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fab fa-youtube text-4xl text-white"></i>
@@ -144,7 +363,7 @@
             <h3 class="text-2xl font-bold mb-4 uppercase font-['Orbitron']">Action Required</h3>
             <p class="text-gray-400 mb-8 leading-relaxed">Subscribe to my YouTube channel to unlock 2X Pro sensitivity for <span id="unlock-model-hint" class="text-white font-bold">this model</span>.</p>
             
-            <a href="https://youtube.com/@saqib242saqib?si=_3s0u4bjXzywJRIR" 
+            <a href="https://www.youtube.com/@Saqib242saqib" 
                target="_blank" 
                id="subscribe-btn"
                onclick="handleSubscribeClick()"
@@ -156,31 +375,88 @@
         </div>
     </div>
 
+    <!-- Unlock Modal for AI Generator -->
+    <div id="ai-unlock-modal" class="fixed inset-0 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-[#16161a] p-8 rounded-3xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(255,46,99,0.2)] border border-white/10">
+            <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fab fa-youtube text-4xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 uppercase font-['Orbitron']">Unlock AI Settings</h3>
+            <p class="text-gray-400 mb-8 leading-relaxed">Subscribe to my YouTube channel to unlock AI Generated sensitivity for <span id="ai-unlock-device-hint" class="text-white font-bold">this device</span>.</p>
+            
+            <a href="https://www.youtube.com/@Saqib242saqib" 
+               target="_blank" 
+               id="ai-subscribe-btn"
+               onclick="handleAISubscribeClick()"
+               class="btn-primary block w-full py-4 rounded-xl font-bold text-lg">
+                <i class="fab fa-youtube mr-2"></i> SUBSCRIBE NOW
+            </a>
+            
+            <p class="mt-6 text-gray-500 text-xs italic">Settings will unlock automatically when you return.</p>
+        </div>
+    </div>
+
     <script>
-       const phoneData = {
-    "Oppo": { "A1k": [95, 90, 80, 70, 50, 60], "A3s": [95, 90, 80, 70, 50, 60], "A5": [94, 89, 79, 69, 48, 60], "A12": [95, 90, 80, 70, 50, 60], "A15": [95, 90, 80, 70, 50, 60], "A16": [94, 89, 78, 68, 48, 60], "A17": [94, 88, 78, 68, 48, 60], "A31": [92, 88, 78, 68, 50, 62], "A53": [91, 88, 78, 68, 50, 62], "A54": [90, 87, 77, 67, 50, 62], "A55": [90, 87, 77, 67, 50, 62], "A57": [90, 88, 78, 68, 50, 62], "A58": [89, 86, 76, 66, 50, 62], "A74": [88, 85, 75, 65, 52, 63], "A76": [90, 88, 78, 68, 52, 63], "A77": [88, 85, 75, 65, 52, 63], "A78": [87, 84, 74, 64, 52, 63], "A96": [89, 87, 77, 67, 52, 63], "F17": [89, 86, 76, 66, 52, 64], "F19": [88, 86, 76, 66, 52, 64], "F21": [88, 86, 76, 66, 52, 64], "F23": [87, 85, 75, 65, 53, 65], "F25": [86, 83, 73, 63, 54, 65], "K10": [92, 88, 78, 68, 50, 62], "K11": [91, 87, 77, 67, 50, 62], "Reno 3": [88, 85, 75, 65, 55, 65], "Reno 5": [87, 85, 75, 65, 55, 65], "Reno 6": [86, 84, 74, 64, 55, 65], "Reno 7": [86, 84, 74, 64, 55, 65], "Reno 8": [86, 84, 74, 64, 55, 65], "Reno 10": [85, 83, 73, 63, 55, 65], "Find X": [85, 83, 73, 63, 55, 65] },
-    "Vivo": { "Y01": [95, 90, 80, 70, 50, 60], "Y02": [95, 90, 80, 70, 50, 60], "Y10": [94, 89, 79, 69, 48, 60], "Y11": [95, 90, 80, 70, 50, 60], "Y12": [94, 89, 79, 69, 48, 60], "Y15": [94, 89, 79, 69, 48, 60], "Y16": [94, 88, 78, 68, 48, 60], "Y17": [94, 88, 78, 68, 48, 60], "Y19": [93, 88, 78, 68, 50, 62], "Y20": [93, 88, 78, 68, 50, 62], "Y21": [93, 88, 78, 68, 50, 62], "Y22": [93, 88, 78, 68, 50, 62], "Y27": [92, 87, 77, 67, 50, 62], "Y30": [92, 87, 77, 67, 50, 62], "Y33": [92, 87, 77, 67, 50, 62], "Y35": [91, 86, 76, 66, 52, 63], "Y36": [90, 86, 76, 66, 52, 63], "Y51": [91, 86, 76, 66, 52, 63], "Y53": [90, 86, 76, 66, 52, 63], "Y73": [89, 85, 75, 65, 52, 64], "S1": [89, 85, 75, 65, 52, 64], "S1 Pro": [88, 85, 75, 65, 53, 64], "S12": [88, 85, 75, 65, 53, 64], "S15": [87, 84, 74, 64, 54, 65], "V20": [88, 84, 74, 64, 54, 65], "V21": [88, 84, 74, 64, 54, 65], "V23": [87, 84, 74, 64, 54, 65], "V25": [86, 83, 73, 63, 55, 65], "V27": [86, 83, 73, 63, 55, 65], "V29": [86, 83, 73, 63, 55, 65], "V30": [85, 82, 72, 62, 55, 65] },
-    "Redmi": { "8A": [95, 90, 80, 70, 50, 60], "8": [94, 89, 79, 69, 48, 60], "9A": [95, 90, 80, 70, 50, 60], "9C": [95, 90, 80, 70, 50, 60], "10A": [94, 89, 79, 69, 48, 60], "10": [92, 88, 78, 68, 50, 62], "12": [90, 87, 77, 67, 52, 63], "13C": [90, 87, 77, 67, 52, 63], "A1": [95, 90, 80, 70, 50, 60], "A2": [94, 89, 79, 69, 48, 60], "A3": [93, 88, 78, 68, 50, 62], "A3X": [92, 87, 77, 67, 50, 62], "Go": [95, 90, 80, 70, 50, 60], "Prime": [90, 86, 76, 66, 52, 63], "S2": [90, 86, 76, 66, 52, 63], "S2 Pro": [89, 85, 75, 65, 53, 64], "Note 5": [92, 88, 78, 68, 50, 62], "Note 6": [91, 87, 77, 67, 50, 62], "Note 7": [92, 88, 78, 68, 50, 62], "Note 7 Pro": [91, 87, 77, 67, 50, 62], "Note 8": [92, 88, 78, 68, 50, 62], "Note 9": [91, 87, 77, 67, 50, 62], "Note 10": [90, 86, 76, 66, 52, 63], "Note 10 Pro": [88, 85, 75, 65, 54, 65], "Note 11": [89, 86, 76, 66, 52, 64], "Note 11 Pro": [87, 84, 74, 64, 55, 65], "Note 12": [88, 85, 75, 65, 53, 64], "Note 13": [87, 84, 74, 64, 54, 65], "Note 14": [86, 83, 73, 63, 55, 65], "Note 14 Pro": [85, 82, 72, 62, 55, 65], "K20": [86, 83, 73, 63, 55, 65], "K40": [85, 82, 72, 62, 55, 65], "K50": [84, 81, 71, 61, 55, 65], "K50 Pro": [83, 80, 70, 60, 55, 65], "K60": [82, 79, 69, 59, 55, 65], "K60 Pro": [81, 78, 68, 58, 55, 65] },
-    "iPhone": { "2G": [89, 84, 74, 64, 42, 58], "3G": [88, 83, 73, 63, 43, 58], "3GS": [88, 83, 73, 63, 43, 58], "4": [87, 82, 72, 62, 44, 58], "4s": [87, 82, 72, 62, 44, 58], "5": [86, 81, 71, 61, 45, 60], "5s": [86, 81, 71, 61, 45, 60], "6 / 6s": [85, 80, 70, 60, 45, 60], "7": [84, 80, 70, 60, 45, 60], "8": [84, 79, 69, 59, 45, 60], "SE": [85, 80, 70, 60, 45, 60], "SE 2": [84, 79, 69, 59, 46, 62], "SE 3": [83, 78, 68, 58, 46, 62], "X": [83, 78, 68, 58, 46, 62], "XR": [82, 78, 68, 58, 46, 62], "XS": [82, 77, 67, 57, 46, 62], "11": [81, 77, 67, 57, 47, 63], "11 Pro": [80, 76, 66, 56, 47, 63], "11 Mini": [81, 77, 67, 57, 47, 63], "12": [80, 76, 66, 56, 48, 64], "12 Pro": [79, 75, 65, 55, 48, 64], "12 Mini": [80, 76, 66, 56, 48, 64], "13": [79, 75, 65, 55, 49, 65], "13 Pro": [78, 74, 64, 54, 49, 65], "13 Mini": [79, 75, 65, 55, 49, 65], "14": [78, 74, 64, 54, 50, 65], "14 Pro": [77, 73, 63, 53, 50, 65], "14 Plus": [77, 73, 63, 53, 50, 65], "15": [77, 73, 63, 53, 50, 65], "15 Pro": [76, 72, 62, 52, 50, 65], "15 Plus": [76, 72, 62, 52, 50, 65], "16": [75, 71, 61, 51, 50, 65], "16 Pro": [74, 70, 60, 50, 50, 65], "16 Pro Max": [73, 69, 59, 49, 50, 65], "XR Plus": [82, 78, 68, 58, 46, 62], "XS Max": [81, 77, 67, 57, 47, 63] },
-    "Infinix": { "S5": [95, 90, 80, 70, 50, 60], "S6": [94, 89, 79, 69, 48, 60], "S7": [93, 88, 78, 68, 50, 62], "S8": [92, 87, 77, 67, 50, 62], "Smart 5": [95, 90, 80, 70, 50, 60], "Smart 6": [95, 90, 80, 70, 50, 60], "Smart 7": [94, 89, 79, 69, 48, 60], "Smart 8": [94, 89, 79, 69, 48, 60], "Smart 9": [93, 88, 78, 68, 50, 62], "Hot 6": [95, 90, 80, 70, 50, 60], "Hot 7": [94, 89, 79, 69, 48, 60], "Hot 8": [94, 89, 79, 69, 48, 60], "Hot 9": [94, 89, 79, 69, 48, 60], "Hot 10": [93, 88, 78, 68, 50, 62], "Hot 11": [93, 88, 78, 68, 50, 62], "Hot 12": [92, 87, 77, 67, 50, 62], "Hot 20": [91, 86, 76, 66, 52, 63], "Hot 30": [90, 86, 76, 66, 52, 63], "Hot 40": [89, 85, 75, 65, 53, 64], "Hot 40 Pro": [88, 84, 74, 64, 54, 65], "Note 4": [93, 88, 78, 68, 50, 62], "Note 5": [92, 87, 77, 67, 50, 62], "Note 6": [91, 86, 76, 66, 52, 63], "Note 7": [92, 87, 77, 67, 50, 62], "Note 8": [91, 86, 76, 66, 52, 63], "Note 10": [90, 85, 75, 65, 53, 64], "Note 11": [89, 85, 75, 65, 53, 64], "Note 12": [88, 84, 74, 64, 54, 65], "Note 30": [88, 84, 74, 64, 54, 65], "Note 30 Pro": [87, 83, 73, 63, 55, 65], "Race": [90, 85, 75, 65, 53, 64], "GT 10": [90, 86, 76, 66, 52, 63], "GT 20": [89, 85, 75, 65, 53, 64], "Zero 5G": [87, 83, 73, 63, 55, 65], "Zero X": [86, 82, 72, 62, 55, 65], "Zero 30": [86, 82, 72, 62, 55, 65], "Zero Ultra": [85, 81, 71, 61, 55, 65] },
-    "Tecno": { "Pop 5": [95, 90, 80, 70, 50, 60], "Pop 6": [94, 89, 79, 69, 48, 60], "Spark Go": [95, 90, 80, 70, 50, 60], "Spark 6": [95, 90, 80, 70, 50, 60], "Spark 7": [95, 90, 80, 70, 50, 60], "Spark 8": [94, 89, 79, 69, 48, 60], "Spark 9": [94, 89, 79, 69, 48, 60], "Spark 10": [93, 88, 78, 68, 50, 62], "Spark 11": [93, 88, 78, 68, 50, 62], "Spark 12": [92, 87, 77, 67, 50, 62], "Spark 20": [92, 87, 77, 67, 50, 62], "Spark 30": [90, 86, 76, 66, 52, 63], "Spark 30 Pro": [89, 85, 75, 65, 53, 64], "Camon 12": [92, 87, 77, 67, 50, 62], "Camon 15": [91, 86, 76, 66, 52, 63], "Camon 16": [92, 87, 77, 67, 50, 62], "Camon 17": [90, 85, 75, 65, 53, 64], "Camon 18": [91, 86, 76, 66, 52, 63], "Camon 19": [89, 85, 75, 65, 53, 64], "Camon 19 Pro": [88, 84, 74, 64, 54, 65], "Camon 20": [90, 86, 76, 66, 52, 63], "Camon 20 Pro": [89, 85, 75, 65, 53, 64], "Camon 30": [87, 83, 73, 63, 55, 65], "Pova": [92, 87, 77, 67, 50, 62], "Pova 2": [91, 86, 76, 66, 52, 63], "Pova 3": [90, 85, 75, 65, 53, 64], "Pova 4": [90, 85, 75, 65, 53, 64], "Pova 5": [89, 84, 74, 64, 54, 65], "Pova 6": [88, 84, 74, 64, 54, 65], "Pova Neo": [92, 87, 77, 67, 50, 62], "Pova Neo 2": [91, 86, 76, 66, 52, 63], "Phantom X": [86, 82, 72, 62, 55, 65], "Phantom 8": [87, 83, 73, 63, 55, 65], "Phantom V": [86, 82, 72, 62, 55, 65] },
-    "OnePlus": { "6": [88, 84, 74, 64, 48, 62], "6T": [88, 84, 74, 64, 48, 62], "7": [87, 83, 73, 63, 48, 63], "7 Pro": [87, 83, 73, 63, 49, 63], "7T": [86, 82, 72, 62, 49, 64], "7T Pro": [86, 82, 72, 62, 49, 64], "8": [85, 81, 71, 61, 50, 65], "8 Pro": [85, 81, 71, 61, 50, 65], "9": [84, 80, 70, 60, 50, 65], "9 Pro": [84, 80, 70, 60, 50, 65], "10": [83, 79, 69, 59, 50, 65], "10 Pro": [83, 79, 69, 59, 50, 65], "11": [82, 78, 68, 58, 50, 65], "11R": [82, 78, 68, 58, 50, 65], "Nord": [86, 82, 72, 62, 49, 64], "Nord 2": [85, 81, 71, 61, 50, 65], "Nord CE": [85, 81, 71, 61, 50, 65] },
-    "Huawei": { "Y5": [95, 90, 80, 70, 50, 60], "Y6": [95, 90, 80, 70, 50, 60], "Y7": [94, 89, 79, 69, 48, 60], "Y8": [94, 89, 79, 69, 48, 60], "Y9": [93, 88, 78, 68, 50, 62], "P30 Lite": [90, 87, 77, 67, 52, 63], "P40 Lite": [89, 86, 76, 66, 52, 63], "P30": [88, 85, 75, 65, 53, 64], "P40": [87, 84, 74, 64, 54, 65], "P50": [86, 83, 73, 63, 55, 65], "P50 Pro": [86, 83, 73, 63, 55, 65], "Mate 20": [88, 84, 74, 64, 54, 65], "Mate 30": [87, 83, 73, 63, 55, 65], "Mate 40": [86, 82, 72, 62, 55, 65], "Nova 5": [90, 86, 76, 66, 52, 63], "Nova 6": [89, 85, 75, 65, 53, 64], "Nova 7": [88, 84, 74, 64, 54, 65] },
-    "Pixel": { "3": [85, 80, 70, 60, 45, 60], "3 XL": [85, 80, 70, 60, 45, 60], "3a": [86, 81, 71, 61, 46, 61], "3a XL": [86, 81, 71, 61, 46, 61], "4": [84, 79, 69, 59, 46, 62], "4 XL": [84, 79, 69, 59, 46, 62], "4a": [85, 80, 70, 60, 47, 63], "4a 5G": [85, 80, 70, 60, 47, 63], "5": [84, 79, 69, 59, 48, 64], "5a": [84, 79, 69, 59, 48, 64], "6": [83, 78, 68, 58, 49, 65], "6 Pro": [83, 78, 68, 58, 49, 65], "6a": [84, 79, 69, 59, 49, 65], "7": [82, 77, 67, 57, 50, 65], "7 Pro": [82, 77, 67, 57, 50, 65], "7a": [83, 78, 68, 58, 50, 65], "8": [81, 76, 66, 56, 50, 65], "8 Pro": [81, 76, 66, 56, 50, 65] },
-    "Samsung": { "Galaxy A04": [95, 90, 80, 70, 50, 60], "Galaxy A05": [95, 90, 80, 70, 50, 60], "Galaxy A10": [95, 90, 80, 70, 50, 60], "Galaxy A12": [94, 89, 79, 69, 48, 60], "Galaxy A14": [94, 89, 79, 69, 48, 60], "Galaxy A15": [94, 89, 79, 69, 48, 60], "Galaxy A20": [93, 88, 78, 68, 50, 62], "Galaxy A21": [93, 88, 78, 68, 50, 62], "Galaxy A25": [94, 89, 79, 69, 48, 60], "Galaxy A30": [92, 87, 77, 67, 50, 62], "Galaxy A31": [92, 87, 77, 67, 50, 62], "Galaxy A32": [91, 86, 76, 66, 52, 63], "Galaxy A33": [91, 87, 77, 67, 50, 62], "Galaxy A34": [90, 86, 76, 66, 52, 63], "Galaxy A50": [89, 85, 75, 65, 53, 64], "Galaxy A51": [88, 85, 75, 65, 53, 64], "Galaxy A52": [88, 84, 74, 64, 54, 65], "Galaxy A53": [89, 85, 75, 65, 53, 64], "Galaxy A54": [87, 84, 74, 64, 54, 65], "Galaxy A71": [88, 84, 74, 64, 54, 65], "Galaxy A72": [88, 84, 74, 64, 54, 65], "Galaxy M11": [94, 89, 79, 69, 48, 60], "Galaxy M21": [92, 87, 77, 67, 50, 62], "Galaxy S20": [86, 82, 72, 62, 55, 65], "Galaxy S21": [86, 82, 72, 62, 55, 65], "Galaxy S22": [85, 81, 71, 61, 55, 65], "Galaxy S23": [85, 81, 71, 61, 55, 65], "Galaxy S23 FE": [85, 81, 71, 61, 55, 65], "Galaxy Z Fold 4": [84, 80, 70, 60, 55, 65], "Galaxy Z Flip 4": [84, 80, 70, 60, 55, 65] }
-};
+        // ================== DATABASE SENSITIVITY SECTION ==================
+        const phoneData = {
+            "Oppo": { "A1k": [95, 90, 80, 70, 50, 60], "A3s": [95, 90, 80, 70, 50, 60], "A5": [94, 89, 79, 69, 48, 60], "A12": [95, 90, 80, 70, 50, 60], "A15": [95, 90, 80, 70, 50, 60], "A16": [94, 89, 78, 68, 48, 60], "A17": [94, 88, 78, 68, 48, 60], "A31": [92, 88, 78, 68, 50, 62], "A53": [91, 88, 78, 68, 50, 62], "A54": [90, 87, 77, 67, 50, 62], "A55": [90, 87, 77, 67, 50, 62], "A57": [90, 88, 78, 68, 50, 62], "A58": [89, 86, 76, 66, 50, 62], "A74": [88, 85, 75, 65, 52, 63], "A76": [90, 88, 78, 68, 52, 63], "A77": [88, 85, 75, 65, 52, 63], "A78": [87, 84, 74, 64, 52, 63], "A96": [89, 87, 77, 67, 52, 63], "F17": [89, 86, 76, 66, 52, 64], "F19": [88, 86, 76, 66, 52, 64], "F21": [88, 86, 76, 66, 52, 64], "F23": [87, 85, 75, 65, 53, 65], "F25": [86, 83, 73, 63, 54, 65], "K10": [92, 88, 78, 68, 50, 62], "K11": [91, 87, 77, 67, 50, 62], "Reno 3": [88, 85, 75, 65, 55, 65], "Reno 5": [87, 85, 75, 65, 55, 65], "Reno 6": [86, 84, 74, 64, 55, 65], "Reno 7": [86, 84, 74, 64, 55, 65], "Reno 8": [86, 84, 74, 64, 55, 65], "Reno 10": [85, 83, 73, 63, 55, 65], "Find X": [85, 83, 73, 63, 55, 65] },
+            "Vivo": { "Y01": [95, 90, 80, 70, 50, 60], "Y02": [95, 90, 80, 70, 50, 60], "Y10": [94, 89, 79, 69, 48, 60], "Y11": [95, 90, 80, 70, 50, 60], "Y12": [94, 89, 79, 69, 48, 60], "Y15": [94, 89, 79, 69, 48, 60], "Y16": [94, 88, 78, 68, 48, 60], "Y17": [94, 88, 78, 68, 48, 60], "Y19": [93, 88, 78, 68, 50, 62], "Y20": [93, 88, 78, 68, 50, 62], "Y21": [93, 88, 78, 68, 50, 62], "Y22": [93, 88, 78, 68, 50, 62], "Y27": [92, 87, 77, 67, 50, 62], "Y30": [92, 87, 77, 67, 50, 62], "Y33": [92, 87, 77, 67, 50, 62], "Y35": [91, 86, 76, 66, 52, 63], "Y36": [90, 86, 76, 66, 52, 63], "Y51": [91, 86, 76, 66, 52, 63], "Y53": [90, 86, 76, 66, 52, 63], "Y73": [89, 85, 75, 65, 52, 64], "S1": [89, 85, 75, 65, 52, 64], "S1 Pro": [88, 85, 75, 65, 53, 64], "S12": [88, 85, 75, 65, 53, 64], "S15": [87, 84, 74, 64, 54, 65], "V20": [88, 84, 74, 64, 54, 65], "V21": [88, 84, 74, 64, 54, 65], "V23": [87, 84, 74, 64, 54, 65], "V25": [86, 83, 73, 63, 55, 65], "V27": [86, 83, 73, 63, 55, 65], "V29": [86, 83, 73, 63, 55, 65], "V30": [85, 82, 72, 62, 55, 65] },
+            "Redmi": { "8A": [95, 90, 80, 70, 50, 60], "8": [94, 89, 79, 69, 48, 60], "9A": [95, 90, 80, 70, 50, 60], "9C": [95, 90, 80, 70, 50, 60], "10A": [94, 89, 79, 69, 48, 60], "10": [92, 88, 78, 68, 50, 62], "12": [90, 87, 77, 67, 52, 63], "13C": [90, 87, 77, 67, 52, 63], "A1": [95, 90, 80, 70, 50, 60], "A2": [94, 89, 79, 69, 48, 60], "A3": [93, 88, 78, 68, 50, 62], "A3X": [92, 87, 77, 67, 50, 62], "Go": [95, 90, 80, 70, 50, 60], "Prime": [90, 86, 76, 66, 52, 63], "S2": [90, 86, 76, 66, 52, 63], "S2 Pro": [89, 85, 75, 65, 53, 64], "Note 5": [92, 88, 78, 68, 50, 62], "Note 6": [91, 87, 77, 67, 50, 62], "Note 7": [92, 88, 78, 68, 50, 62], "Note 7 Pro": [91, 87, 77, 67, 50, 62], "Note 8": [92, 88, 78, 68, 50, 62], "Note 9": [91, 87, 77, 67, 50, 62], "Note 10": [90, 86, 76, 66, 52, 63], "Note 10 Pro": [88, 85, 75, 65, 54, 65], "Note 11": [89, 86, 76, 66, 52, 64], "Note 11 Pro": [87, 84, 74, 64, 55, 65], "Note 12": [88, 85, 75, 65, 53, 64], "Note 13": [87, 84, 74, 64, 54, 65], "Note 14": [86, 83, 73, 63, 55, 65], "Note 14 Pro": [85, 82, 72, 62, 55, 65], "K20": [86, 83, 73, 63, 55, 65], "K40": [85, 82, 72, 62, 55, 65], "K50": [84, 81, 71, 61, 55, 65], "K50 Pro": [83, 80, 70, 60, 55, 65], "K60": [82, 79, 69, 59, 55, 65], "K60 Pro": [81, 78, 68, 58, 55, 65] },
+            "iPhone": { "2G": [89, 84, 74, 64, 42, 58], "3G": [88, 83, 73, 63, 43, 58], "3GS": [88, 83, 73, 63, 43, 58], "4": [87, 82, 72, 62, 44, 58], "4s": [87, 82, 72, 62, 44, 58], "5": [86, 81, 71, 61, 45, 60], "5s": [86, 81, 71, 61, 45, 60], "6 / 6s": [85, 80, 70, 60, 45, 60], "7": [84, 80, 70, 60, 45, 60], "8": [84, 79, 69, 59, 45, 60], "SE": [85, 80, 70, 60, 45, 60], "SE 2": [84, 79, 69, 59, 46, 62], "SE 3": [83, 78, 68, 58, 46, 62], "X": [83, 78, 68, 58, 46, 62], "XR": [82, 78, 68, 58, 46, 62], "XS": [82, 77, 67, 57, 46, 62], "11": [81, 77, 67, 57, 47, 63], "11 Pro": [80, 76, 66, 56, 47, 63], "11 Mini": [81, 77, 67, 57, 47, 63], "12": [80, 76, 66, 56, 48, 64], "12 Pro": [79, 75, 65, 55, 48, 64], "12 Mini": [80, 76, 66, 56, 48, 64], "13": [79, 75, 65, 55, 49, 65], "13 Pro": [78, 74, 64, 54, 49, 65], "13 Mini": [79, 75, 65, 55, 49, 65], "14": [78, 74, 64, 54, 50, 65], "14 Pro": [77, 73, 63, 53, 50, 65], "14 Plus": [77, 73, 63, 53, 50, 65], "15": [77, 73, 63, 53, 50, 65], "15 Pro": [76, 72, 62, 52, 50, 65], "15 Plus": [76, 72, 62, 52, 50, 65], "16": [75, 71, 61, 51, 50, 65], "16 Pro": [74, 70, 60, 50, 50, 65], "16 Pro Max": [73, 69, 59, 49, 50, 65], "XR Plus": [82, 78, 68, 58, 46, 62], "XS Max": [81, 77, 67, 57, 47, 63] },
+            "Infinix": { "S5": [95, 90, 80, 70, 50, 60], "S6": [94, 89, 79, 69, 48, 60], "S7": [93, 88, 78, 68, 50, 62], "S8": [92, 87, 77, 67, 50, 62], "Smart 5": [95, 90, 80, 70, 50, 60], "Smart 6": [95, 90, 80, 70, 50, 60], "Smart 7": [94, 89, 79, 69, 48, 60], "Smart 8": [94, 89, 79, 69, 48, 60], "Smart 9": [93, 88, 78, 68, 50, 62], "Hot 6": [95, 90, 80, 70, 50, 60], "Hot 7": [94, 89, 79, 69, 48, 60], "Hot 8": [94, 89, 79, 69, 48, 60], "Hot 9": [94, 89, 79, 69, 48, 60], "Hot 10": [93, 88, 78, 68, 50, 62], "Hot 11": [93, 88, 78, 68, 50, 62], "Hot 12": [92, 87, 77, 67, 50, 62], "Hot 20": [91, 86, 76, 66, 52, 63], "Hot 30": [90, 86, 76, 66, 52, 63], "Hot 40": [89, 85, 75, 65, 53, 64], "Hot 40 Pro": [88, 84, 74, 64, 54, 65], "Note 4": [93, 88, 78, 68, 50, 62], "Note 5": [92, 87, 77, 67, 50, 62], "Note 6": [91, 86, 76, 66, 52, 63], "Note 7": [92, 87, 77, 67, 50, 62], "Note 8": [91, 86, 76, 66, 52, 63], "Note 10": [90, 85, 75, 65, 53, 64], "Note 11": [89, 85, 75, 65, 53, 64], "Note 12": [88, 84, 74, 64, 54, 65], "Note 30": [88, 84, 74, 64, 54, 65], "Note 30 Pro": [87, 83, 73, 63, 55, 65], "Race": [90, 85, 75, 65, 53, 64], "GT 10": [90, 86, 76, 66, 52, 63], "GT 20": [89, 85, 75, 65, 53, 64], "Zero 5G": [87, 83, 73, 63, 55, 65], "Zero X": [86, 82, 72, 62, 55, 65], "Zero 30": [86, 82, 72, 62, 55, 65], "Zero Ultra": [85, 81, 71, 61, 55, 65] },
+            "Tecno": { "Pop 5": [95, 90, 80, 70, 50, 60], "Pop 6": [94, 89, 79, 69, 48, 60], "Spark Go": [95, 90, 80, 70, 50, 60], "Spark 6": [95, 90, 80, 70, 50, 60], "Spark 7": [95, 90, 80, 70, 50, 60], "Spark 8": [94, 89, 79, 69, 48, 60], "Spark 9": [94, 89, 79, 69, 48, 60], "Spark 10": [93, 88, 78, 68, 50, 62], "Spark 11": [93, 88, 78, 68, 50, 62], "Spark 12": [92, 87, 77, 67, 50, 62], "Spark 20": [92, 87, 77, 67, 50, 62], "Spark 30": [90, 86, 76, 66, 52, 63], "Spark 30 Pro": [89, 85, 75, 65, 53, 64], "Camon 12": [92, 87, 77, 67, 50, 62], "Camon 15": [91, 86, 76, 66, 52, 63], "Camon 16": [92, 87, 77, 67, 50, 62], "Camon 17": [90, 85, 75, 65, 53, 64], "Camon 18": [91, 86, 76, 66, 52, 63], "Camon 19": [89, 85, 75, 65, 53, 64], "Camon 19 Pro": [88, 84, 74, 64, 54, 65], "Camon 20": [90, 86, 76, 66, 52, 63], "Camon 20 Pro": [89, 85, 75, 65, 53, 64], "Camon 30": [87, 83, 73, 63, 55, 65], "Pova": [92, 87, 77, 67, 50, 62], "Pova 2": [91, 86, 76, 66, 52, 63], "Pova 3": [90, 85, 75, 65, 53, 64], "Pova 4": [90, 85, 75, 65, 53, 64], "Pova 5": [89, 84, 74, 64, 54, 65], "Pova 6": [88, 84, 74, 64, 54, 65], "Pova Neo": [92, 87, 77, 67, 50, 62], "Pova Neo 2": [91, 86, 76, 66, 52, 63], "Phantom X": [86, 82, 72, 62, 55, 65], "Phantom 8": [87, 83, 73, 63, 55, 65], "Phantom V": [86, 82, 72, 62, 55, 65] },
+            "OnePlus": { "6": [88, 84, 74, 64, 48, 62], "6T": [88, 84, 74, 64, 48, 62], "7": [87, 83, 73, 63, 48, 63], "7 Pro": [87, 83, 73, 63, 49, 63], "7T": [86, 82, 72, 62, 49, 64], "7T Pro": [86, 82, 72, 62, 49, 64], "8": [85, 81, 71, 61, 50, 65], "8 Pro": [85, 81, 71, 61, 50, 65], "9": [84, 80, 70, 60, 50, 65], "9 Pro": [84, 80, 70, 60, 50, 65], "10": [83, 79, 69, 59, 50, 65], "10 Pro": [83, 79, 69, 59, 50, 65], "11": [82, 78, 68, 58, 50, 65], "11R": [82, 78, 68, 58, 50, 65], "Nord": [86, 82, 72, 62, 49, 64], "Nord 2": [85, 81, 71, 61, 50, 65], "Nord CE": [85, 81, 71, 61, 50, 65] },
+            "Huawei": { "Y5": [95, 90, 80, 70, 50, 60], "Y6": [95, 90, 80, 70, 50, 60], "Y7": [94, 89, 79, 69, 48, 60], "Y8": [94, 89, 79, 69, 48, 60], "Y9": [93, 88, 78, 68, 50, 62], "P30 Lite": [90, 87, 77, 67, 52, 63], "P40 Lite": [89, 86, 76, 66, 52, 63], "P30": [88, 85, 75, 65, 53, 64], "P40": [87, 84, 74, 64, 54, 65], "P50": [86, 83, 73, 63, 55, 65], "P50 Pro": [86, 83, 73, 63, 55, 65], "Mate 20": [88, 84, 74, 64, 54, 65], "Mate 30": [87, 83, 73, 63, 55, 65], "Mate 40": [86, 82, 72, 62, 55, 65], "Nova 5": [90, 86, 76, 66, 52, 63], "Nova 6": [89, 85, 75, 65, 53, 64], "Nova 7": [88, 84, 74, 64, 54, 65] },
+            "Pixel": { "3": [85, 80, 70, 60, 45, 60], "3 XL": [85, 80, 70, 60, 45, 60], "3a": [86, 81, 71, 61, 46, 61], "3a XL": [86, 81, 71, 61, 46, 61], "4": [84, 79, 69, 59, 46, 62], "4 XL": [84, 79, 69, 59, 46, 62], "4a": [85, 80, 70, 60, 47, 63], "4a 5G": [85, 80, 70, 60, 47, 63], "5": [84, 79, 69, 59, 48, 64], "5a": [84, 79, 69, 59, 48, 64], "6": [83, 78, 68, 58, 49, 65], "6 Pro": [83, 78, 68, 58, 49, 65], "6a": [84, 79, 69, 59, 49, 65], "7": [82, 77, 67, 57, 50, 65], "7 Pro": [82, 77, 67, 57, 50, 65], "7a": [83, 78, 68, 58, 50, 65], "8": [81, 76, 66, 56, 50, 65], "8 Pro": [81, 76, 66, 56, 50, 65] },
+            "Samsung": { "Galaxy A04": [95, 90, 80, 70, 50, 60], "Galaxy A05": [95, 90, 80, 70, 50, 60], "Galaxy A10": [95, 90, 80, 70, 50, 60], "Galaxy A12": [94, 89, 79, 69, 48, 60], "Galaxy A14": [94, 89, 79, 69, 48, 60], "Galaxy A15": [94, 89, 79, 69, 48, 60], "Galaxy A20": [93, 88, 78, 68, 50, 62], "Galaxy A21": [93, 88, 78, 68, 50, 62], "Galaxy A25": [94, 89, 79, 69, 48, 60], "Galaxy A30": [92, 87, 77, 67, 50, 62], "Galaxy A31": [92, 87, 77, 67, 50, 62], "Galaxy A32": [91, 86, 76, 66, 52, 63], "Galaxy A33": [91, 87, 77, 67, 50, 62], "Galaxy A34": [90, 86, 76, 66, 52, 63], "Galaxy A50": [89, 85, 75, 65, 53, 64], "Galaxy A51": [88, 85, 75, 65, 53, 64], "Galaxy A52": [88, 84, 74, 64, 54, 65], "Galaxy A53": [89, 85, 75, 65, 53, 64], "Galaxy A54": [87, 84, 74, 64, 54, 65], "Galaxy A71": [88, 84, 74, 64, 54, 65], "Galaxy A72": [88, 84, 74, 64, 54, 65], "Galaxy M11": [94, 89, 79, 69, 48, 60], "Galaxy M21": [92, 87, 77, 67, 50, 62], "Galaxy S20": [86, 82, 72, 62, 55, 65], "Galaxy S21": [86, 82, 72, 62, 55, 65], "Galaxy S22": [85, 81, 71, 61, 55, 65], "Galaxy S23": [85, 81, 71, 61, 55, 65], "Galaxy S23 FE": [85, 81, 71, 61, 55, 65], "Galaxy Z Fold 4": [84, 80, 70, 60, 55, 65], "Galaxy Z Flip 4": [84, 80, 70, 60, 55, 65] }
+        };
 
         const labels = ["General", "Red Dot", "2x Scope", "4x Scope", "AWM", "Free Look"];
         const icons = ["🎯", "🔴", "🔍", "🔎", "🎯", "👀"];
         let currentBrand = "";
         let currentModel = "";
         let isWaitingForUnlock = false;
+        
+        // AI Generator Variables
+        let myChart = null;
+        let currentAIData = null;
+        let aiDeviceName = "";
+        let isAIWaitingForUnlock = false;
+        
+        // Register Chart.js Datalabels Plugin
+        Chart.register(ChartDataLabels);
+
+        // Function to find if device exists in database
+        function findDeviceInDatabase(deviceName) {
+            const lowerDeviceName = deviceName.toLowerCase().trim();
+            
+            for (const brand in phoneData) {
+                for (const model in phoneData[brand]) {
+                    // Check exact match or partial match
+                    const lowerModel = model.toLowerCase();
+                    const lowerBrand = brand.toLowerCase();
+                    
+                    // Check if device name contains brand or model
+                    if (lowerDeviceName.includes(lowerBrand) && lowerDeviceName.includes(lowerModel) ||
+                        lowerDeviceName.includes(lowerModel) ||
+                        lowerDeviceName === lowerModel ||
+                        lowerDeviceName === `${lowerBrand} ${lowerModel}`) {
+                        return {
+                            brand: brand,
+                            model: model,
+                            sensitivity: phoneData[brand][model]
+                        };
+                    }
+                }
+            }
+            return null;
+        }
 
         function init() {
             const brandsGrid = document.getElementById('brands-grid');
             Object.keys(phoneData).forEach(brand => {
                 const btn = document.createElement('div');
-                btn.className = "glass-card p-6 rounded-2xl cursor-pointer text-center";
+                btn.className = "glass-card p-6 rounded-2xl cursor-pointer text-center hover:border-[#ff2e63]/50 transition-all";
                 btn.innerHTML = `<h3 class="text-xl font-bold uppercase tracking-wider">${brand}</h3>`;
                 btn.onclick = () => showModels(brand);
                 brandsGrid.appendChild(btn);
@@ -193,9 +469,16 @@
                     document.getElementById('unlock-modal').style.display = 'none';
                     showResult();
                 }
+                
+                if (isAIWaitingForUnlock) {
+                    isAIWaitingForUnlock = false;
+                    document.getElementById('ai-unlock-modal').classList.add('hidden');
+                    showAIResult();
+                }
             });
         }
 
+        // ================== DATABASE FUNCTIONS ==================
         function showBrands() {
             document.getElementById('brand-selection').classList.remove('hidden');
             document.getElementById('model-selection').classList.add('hidden');
@@ -214,7 +497,7 @@
 
             Object.keys(phoneData[currentBrand]).forEach(model => {
                 const btn = document.createElement('div');
-                btn.className = "glass-card px-6 py-4 rounded-xl cursor-pointer flex justify-between items-center";
+                btn.className = "glass-card px-6 py-4 rounded-xl cursor-pointer flex justify-between items-center hover:border-[#ff2e63]/50 transition-all";
                 btn.innerHTML = `<span class="font-bold">${model}</span> <i class="fas fa-lock text-[#ff2e63]/50"></i>`;
                 btn.onclick = () => triggerUnlockPopup(model);
                 modelsGrid.appendChild(btn);
@@ -292,6 +575,192 @@
             showToast("Copied to Clipboard!");
         }
 
+        // ================== AI GENERATOR FUNCTIONS ==================
+        async function generateWithAI() {
+            const device = document.getElementById('deviceInput').value.trim();
+            const btn = document.getElementById('genBtn');
+            const loading = document.getElementById('ai-loading');
+            const resultArea = document.getElementById('ai-resultArea');
+
+            if (!device) {
+                showToast("Please enter a device model");
+                return;
+            }
+
+            // Check if device exists in real database
+            const existingDevice = findDeviceInDatabase(device);
+            
+            if (existingDevice) {
+                // Device exists - show database sensitivity
+                aiDeviceName = device;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                loading.classList.remove('hidden');
+                resultArea.classList.add('hidden');
+
+                // Show unlock popup for AI results
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                    document.getElementById('ai-unlock-device-hint').innerText = device;
+                    document.getElementById('ai-unlock-modal').classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Generate AI Settings</span><i class="fas fa-bolt-lightning"></i>';
+                }, 2000);
+            } else {
+                // Device doesn't exist
+                showToast("❌ This device does not exist in our database");
+                return;
+            }
+        }
+
+        function handleAISubscribeClick() {
+            isAIWaitingForUnlock = true;
+        }
+
+        function showAIResult() {
+            // Check if device exists in database and use real data
+            const existingDevice = findDeviceInDatabase(aiDeviceName);
+            
+            if (existingDevice) {
+                // Use real database sensitivity
+                currentAIData = {
+                    general: existingDevice.sensitivity[0],
+                    redDot: existingDevice.sensitivity[1],
+                    scope2x: existingDevice.sensitivity[2],
+                    scope4x: existingDevice.sensitivity[3],
+                    awm: existingDevice.sensitivity[4],
+                    freeLook: existingDevice.sensitivity[5],
+                    advice: "AI recommends using these 2X boosted settings for optimal gameplay performance on " + aiDeviceName
+                };
+            } else {
+                // Fallback to mock data (shouldn't happen with our check)
+                const mockAIData = {
+                    general: Math.floor(Math.random() * 50) + 50,
+                    redDot: Math.floor(Math.random() * 50) + 50,
+                    scope2x: Math.floor(Math.random() * 50) + 50,
+                    scope4x: Math.floor(Math.random() * 50) + 50,
+                    awm: Math.floor(Math.random() * 50) + 50,
+                    freeLook: Math.floor(Math.random() * 50) + 50,
+                    advice: "AI recommends using these 2X boosted settings for optimal gameplay performance on " + aiDeviceName
+                };
+                currentAIData = mockAIData;
+            }
+            
+            const resultArea = document.getElementById('ai-resultArea');
+            resultArea.classList.remove('hidden');
+            
+            document.getElementById('ai-resultTitle').innerText = aiDeviceName + " AI Settings";
+            
+            const aiLabels = ['General', 'Red Dot', '2x Scope', '4x Scope', 'AWM', 'Free Look'];
+            const values = [currentAIData.general, currentAIData.redDot, currentAIData.scope2x, currentAIData.scope4x, currentAIData.awm, currentAIData.freeLook].map(v => Number(v) * 2);
+
+            document.getElementById('ai-statsGrid').innerHTML = aiLabels.map((label, i) => `
+                <div class="glass-card p-4 rounded-2xl border border-slate-700/50 text-center hover:border-[#ff2e63]/50 transition-all">
+                    <p class="text-[9px] text-[#ff2e63] uppercase font-bold mb-1 tracking-tighter">${label}</p>
+                    <p class="text-2xl font-black text-white">${values[i]}</p>
+                </div>
+            `).join('');
+
+            renderChart(aiLabels, values);
+            showToast("AI Settings Unlocked!");
+        }
+
+        function renderChart(labels, values) {
+            const ctx = document.getElementById('sensitivityChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 400, 0);
+            gradient.addColorStop(0, '#ff2e63'); 
+            gradient.addColorStop(1, '#ff6b6b'); 
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: gradient,
+                        borderRadius: 10,
+                        barThickness: 24,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { right: 40 } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { 
+                            enabled: true,
+                            backgroundColor: '#0a0a0c',
+                            titleColor: '#ff2e63',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff2e63',
+                            borderWidth: 1
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            anchor: 'end',
+                            align: 'right',
+                            offset: 4,
+                            font: { weight: 'bold', size: 14 },
+                            formatter: (value) => value
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            beginAtZero: true, 
+                            max: 200,
+                            grid: { 
+                                display: true, 
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                display: true,
+                                color: '#94a3b8',
+                                font: { size: 12 }
+                            }
+                        },
+                        y: { 
+                            grid: { 
+                                display: false, 
+                                drawBorder: false 
+                            },
+                            ticks: { 
+                                color: '#ffffff', 
+                                font: { size: 12, weight: '600' } 
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function copyAIToClipboard() {
+            if(!currentAIData) return;
+            const text = `Device: ${aiDeviceName}
+General: ${currentAIData.general * 2}
+Red Dot: ${currentAIData.redDot * 2}
+2x Scope: ${currentAIData.scope2x * 2}
+4x Scope: ${currentAIData.scope4x * 2}
+AWM: ${currentAIData.awm * 2}
+Free Look: ${currentAIData.freeLook * 2}
+Tip: ${currentAIData.advice}`;
+
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            showToast("AI Settings Copied!");
+        }
+
+        // ================== COMMON FUNCTIONS ==================
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#ff2e63] text-white px-8 py-3 rounded-full font-bold shadow-2xl z-[200] border border-white/20";
