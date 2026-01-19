@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Sensitivity Hub - 2X Boosted</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgba(255, 46, 99, 0.7), 0 0 20px rgba(255, 46, 99, 0.5);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-5px);
+            border-color: #ff2e63;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff2e63, #ff6b6b);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 46, 99, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(255, 46, 99, 0.5);
+            transform: scale(1.02);
+        }
+
+        .progress-bar-fill {
+            transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        /* Modal Overlay */
+        #unlock-modal {
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            z-index: 100;
+        }
+
+        .tab-anim {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff2e63; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header class="py-6 px-4 border-b border-white/10 text-center">
+        <h1 class="text-4xl font-bold neon-text font-['Orbitron'] tracking-widest text-[#ff2e63]">
+            SENSITIVITY HUB
+        </h1>
+        <p class="text-gray-400 mt-2 font-bold uppercase tracking-widest">2X Boosted Settings</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 mb-20">
+        
+        <!-- Step 1: Select Brand -->
+        <section id="brand-selection" class="tab-anim">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-mobile-alt text-[#ff2e63]"></i> Choose Brand
+            </h2>
+            <div id="brands-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Brands dynamically injected -->
+            </div>
+        </section>
+
+        <!-- Step 2: Select Model -->
+        <section id="model-selection" class="hidden tab-anim">
+            <button onclick="showBrands()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
+                <i class="fas fa-arrow-left"></i> Back to Brands
+            </button>
+            <h2 id="brand-title" class="text-2xl font-bold mb-6 text-[#ff2e63]">Models</h2>
+            <div id="models-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Models dynamically injected -->
+            </div>
+        </section>
+
+        <!-- Step 3: Sensitivity Result -->
+        <section id="result-view" class="hidden tab-anim">
+            <button onclick="showModels()" class="text-sm text-gray-400 mb-4 flex items-center gap-2 hover:text-white transition">
+                <i class="fas fa-arrow-left"></i> Back to Models
+            </button>
+            
+            <div class="glass-card rounded-2xl p-6 border-t-4 border-t-[#ff2e63]">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="result-model-name" class="text-3xl font-bold text-white uppercase">Device Name</h2>
+                        <p id="result-brand-name" class="text-[#ff2e63] font-bold tracking-widest text-sm">BRAND NAME</p>
+                    </div>
+                    <button onclick="copyToClipboard()" class="bg-[#ff2e63]/20 hover:bg-[#ff2e63]/40 p-3 rounded-lg transition text-[#ff2e63]" title="Copy Table">
+                        <i class="fas fa-copy text-xl"></i>
+                    </button>
+                </div>
+
+                <div id="stats-container" class="space-y-6">
+                    <!-- Progress bars injected here -->
+                </div>
+
+                <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center gap-3">
+                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                    <p class="text-gray-300 font-bold uppercase text-xs tracking-widest">
+                        2X Optimized High-Performance Settings
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Unlock Modal -->
+    <div id="unlock-modal" class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-[#16161a] p-8 rounded-3xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(255,46,99,0.2)] border border-white/10">
+            <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fab fa-youtube text-4xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 uppercase font-['Orbitron']">Action Required</h3>
+            <p class="text-gray-400 mb-8 leading-relaxed">Subscribe to my YouTube channel to unlock 2X Pro sensitivity for <span id="unlock-model-hint" class="text-white font-bold">this model</span>.</p>
+            
+            <a href="https://youtube.com/@saqib242saqib?si=_3s0u4bjXzywJRIR" 
+               target="_blank" 
+               id="subscribe-btn"
+               onclick="handleSubscribeClick()"
+               class="btn-primary block w-full py-4 rounded-xl font-bold text-lg">
+                <i class="fab fa-youtube mr-2"></i> SUBSCRIBE NOW
+            </a>
+            
+            <p class="mt-6 text-gray-500 text-xs italic">Sensitivity will unlock automatically when you return.</p>
+        </div>
+    </div>
+
+    <script>
+        const phoneData = {
+            "Oppo": { "A1k": [95, 90, 80, 70, 50, 60], "A3s": [95, 90, 80, 70, 50, 60], "A5": [94, 89, 79, 69, 48, 60], "A15": [95, 90, 80, 70, 50, 60], "A16": [94, 89, 78, 68, 48, 60], "A17": [94, 88, 78, 68, 48, 60], "A31": [92, 88, 78, 68, 50, 62], "A54": [90, 87, 77, 67, 50, 62], "A57": [90, 88, 78, 68, 50, 62], "A76": [90, 88, 78, 68, 52, 63], "A96": [89, 87, 77, 67, 52, 63], "F19": [88, 86, 76, 66, 52, 64], "F21": [88, 86, 76, 66, 52, 64], "F23": [87, 85, 75, 65, 53, 65], "Reno 5": [87, 85, 75, 65, 55, 65], "Reno 8": [86, 84, 74, 64, 55, 65], "Find X": [85, 83, 73, 63, 55, 65] },
+            "Vivo": { "Y11": [95, 90, 80, 70, 50, 60], "Y12": [94, 89, 79, 69, 48, 60], "Y15": [94, 89, 79, 69, 48, 60], "Y16": [94, 88, 78, 68, 48, 60], "Y20": [93, 88, 78, 68, 50, 62], "Y21": [93, 88, 78, 68, 50, 62], "Y27": [92, 87, 77, 67, 50, 62], "Y33": [92, 87, 77, 67, 50, 62], "Y35": [91, 86, 76, 66, 52, 63], "Y36": [90, 86, 76, 66, 52, 63], "S1": [89, 85, 75, 65, 52, 64], "S1 Pro": [88, 85, 75, 65, 53, 64], "V20": [88, 84, 74, 64, 54, 65], "V23": [87, 84, 74, 64, 54, 65], "V25": [86, 83, 73, 63, 55, 65], "V27": [86, 83, 73, 63, 55, 65] },
+            "Redmi": { "9A": [95, 90, 80, 70, 50, 60], "9C": [95, 90, 80, 70, 50, 60], "10A": [94, 89, 79, 69, 48, 60], "10": [92, 88, 78, 68, 50, 62], "12": [90, 87, 77, 67, 52, 63], "13C": [90, 87, 77, 67, 52, 63], "Note 8": [92, 88, 78, 68, 50, 62], "Note 9": [91, 87, 77, 67, 50, 62], "Note 10": [90, 86, 76, 66, 52, 63], "Note 11": [89, 86, 76, 66, 52, 64], "Note 12": [88, 85, 75, 65, 53, 64], "Note 13": [87, 84, 74, 64, 54, 65], "Note 10 Pro": [88, 85, 75, 65, 54, 65], "Note 11 Pro": [87, 84, 74, 64, 55, 65], "K20": [86, 83, 73, 63, 55, 65], "K40": [85, 82, 72, 62, 55, 65] },
+            "iPhone": { "6 / 6s": [85, 80, 70, 60, 45, 60], "7": [84, 80, 70, 60, 45, 60], "8": [84, 79, 69, 59, 45, 60], "X": [83, 78, 68, 58, 46, 62], "XR": [82, 78, 68, 58, 46, 62], "XS": [82, 77, 67, 57, 46, 62], "11": [81, 77, 67, 57, 47, 63], "11 Pro": [80, 76, 66, 56, 47, 63], "12": [80, 76, 66, 56, 48, 64], "12 Pro": [79, 75, 65, 55, 48, 64], "13": [79, 75, 65, 55, 49, 65], "13 Pro": [78, 74, 64, 54, 49, 65], "14": [78, 74, 64, 54, 50, 65], "14 Pro": [77, 73, 63, 53, 50, 65], "15": [77, 73, 63, 53, 50, 65], "15 Pro": [76, 72, 62, 52, 50, 65] },
+            "Infinix": { "Smart 5": [95, 90, 80, 70, 50, 60], "Smart 6": [95, 90, 80, 70, 50, 60], "Smart 7": [94, 89, 79, 69, 48, 60], "Hot 8": [94, 89, 79, 69, 48, 60], "Hot 9": [94, 89, 79, 69, 48, 60], "Hot 10": [93, 88, 78, 68, 50, 62], "Hot 11": [93, 88, 78, 68, 50, 62], "Hot 12": [92, 87, 77, 67, 50, 62], "Hot 20": [91, 86, 76, 66, 52, 63], "Hot 30": [90, 86, 76, 66, 52, 63], "Note 7": [92, 87, 77, 67, 50, 62], "Note 8": [91, 86, 76, 66, 52, 63], "Note 10": [90, 85, 75, 65, 53, 64], "Note 11": [89, 85, 75, 65, 53, 64], "Note 12": [88, 84, 74, 64, 54, 65], "Zero 5G": [87, 83, 73, 63, 55, 65], "Zero X": [86, 82, 72, 62, 55, 65] },
+            "Tecno": { "Spark Go": [95, 90, 80, 70, 50, 60], "Spark 7": [95, 90, 80, 70, 50, 60], "Spark 8": [94, 89, 79, 69, 48, 60], "Spark 9": [94, 89, 79, 69, 48, 60], "Spark 10": [93, 88, 78, 68, 50, 62], "Spark 20": [92, 87, 77, 67, 50, 62], "Camon 16": [92, 87, 77, 67, 50, 62], "Camon 18": [91, 86, 76, 66, 52, 63], "Camon 20": [90, 86, 76, 66, 52, 63], "Camon 20 Pro": [89, 85, 75, 65, 53, 64], "Pova": [92, 87, 77, 67, 50, 62], "Pova 2": [91, 86, 76, 66, 52, 63], "Pova 3": [90, 85, 75, 65, 53, 64], "Pova 5": [89, 84, 74, 64, 54, 65], "Phantom X": [86, 82, 72, 62, 55, 65] },
+            "OnePlus": { "6": [88, 84, 74, 64, 48, 62], "6T": [88, 84, 74, 64, 48, 62], "7": [87, 83, 73, 63, 48, 63], "7 Pro": [87, 83, 73, 63, 49, 63], "7T": [86, 82, 72, 62, 49, 64], "7T Pro": [86, 82, 72, 62, 49, 64], "8": [85, 81, 71, 61, 50, 65], "8 Pro": [85, 81, 71, 61, 50, 65], "9": [84, 80, 70, 60, 50, 65], "9 Pro": [84, 80, 70, 60, 50, 65], "10": [83, 79, 69, 59, 50, 65], "10 Pro": [83, 79, 69, 59, 50, 65], "11": [82, 78, 68, 58, 50, 65], "11R": [82, 78, 68, 58, 50, 65], "Nord": [86, 82, 72, 62, 49, 64], "Nord 2": [85, 81, 71, 61, 50, 65], "Nord CE": [85, 81, 71, 61, 50, 65] },
+            "Huawei": { "Y5": [95, 90, 80, 70, 50, 60], "Y6": [95, 90, 80, 70, 50, 60], "Y7": [94, 89, 79, 69, 48, 60], "Y8": [94, 89, 79, 69, 48, 60], "Y9": [93, 88, 78, 68, 50, 62], "P30 Lite": [90, 87, 77, 67, 52, 63], "P40 Lite": [89, 86, 76, 66, 52, 63], "P30": [88, 85, 75, 65, 53, 64], "P40": [87, 84, 74, 64, 54, 65], "P50": [86, 83, 73, 63, 55, 65], "P50 Pro": [86, 83, 73, 63, 55, 65], "Mate 20": [88, 84, 74, 64, 54, 65], "Mate 30": [87, 83, 73, 63, 55, 65], "Mate 40": [86, 82, 72, 62, 55, 65], "Nova 5": [90, 86, 76, 66, 52, 63], "Nova 6": [89, 85, 75, 65, 53, 64], "Nova 7": [88, 84, 74, 64, 54, 65] },
+            "Pixel": { "3": [85, 80, 70, 60, 45, 60], "3 XL": [85, 80, 70, 60, 45, 60], "3a": [86, 81, 71, 61, 46, 61], "3a XL": [86, 81, 71, 61, 46, 61], "4": [84, 79, 69, 59, 46, 62], "4 XL": [84, 79, 69, 59, 46, 62], "4a": [85, 80, 70, 60, 47, 63], "4a 5G": [85, 80, 70, 60, 47, 63], "5": [84, 79, 69, 59, 48, 64], "5a": [84, 79, 69, 59, 48, 64], "6": [83, 78, 68, 58, 49, 65], "6 Pro": [83, 78, 68, 58, 49, 65], "6a": [84, 79, 69, 59, 49, 65], "7": [82, 77, 67, 57, 50, 65], "7 Pro": [82, 77, 67, 57, 50, 65], "7a": [83, 78, 68, 58, 50, 65], "8": [81, 76, 66, 56, 50, 65], "8 Pro": [81, 76, 66, 56, 50, 65] },
+            "Samsung": { "Galaxy A05": [95, 90, 80, 70, 50, 60], "Galaxy A15": [94, 89, 79, 69, 48, 60], "Galaxy A25": [94, 89, 79, 69, 48, 60], "Galaxy A31": [92, 88, 78, 68, 50, 62], "Galaxy A32": [92, 88, 78, 68, 50, 62], "Galaxy A33": [91, 87, 77, 67, 50, 62], "Galaxy A51": [90, 86, 76, 66, 52, 63], "Galaxy A52": [90, 86, 76, 66, 52, 63], "Galaxy A53": [89, 85, 75, 65, 53, 64], "Galaxy A71": [88, 84, 74, 64, 54, 65], "Galaxy A72": [88, 84, 74, 64, 54, 65], "Galaxy S20": [87, 83, 73, 63, 55, 65], "Galaxy S21": [86, 82, 72, 62, 55, 65], "Galaxy S22": [85, 81, 71, 61, 55, 65], "Galaxy S23": [85, 81, 71, 61, 55, 65], "Galaxy Z Fold 4": [84, 80, 70, 60, 55, 65], "Galaxy Z Flip 4": [84, 80, 70, 60, 55, 65] }
+        };
+
+        const labels = ["General", "Red Dot", "2x Scope", "4x Scope", "AWM", "Free Look"];
+        const icons = ["🎯", "🔴", "🔍", "🔎", "🎯", "👀"];
+        let currentBrand = "";
+        let currentModel = "";
+        let isWaitingForUnlock = false;
+
+        function init() {
+            const brandsGrid = document.getElementById('brands-grid');
+            Object.keys(phoneData).forEach(brand => {
+                const btn = document.createElement('div');
+                btn.className = "glass-card p-6 rounded-2xl cursor-pointer text-center";
+                btn.innerHTML = `<h3 class="text-xl font-bold uppercase tracking-wider">${brand}</h3>`;
+                btn.onclick = () => showModels(brand);
+                brandsGrid.appendChild(btn);
+            });
+
+            // Browser focus listener to auto-unlock when user returns
+            window.addEventListener('focus', () => {
+                if (isWaitingForUnlock) {
+                    isWaitingForUnlock = false;
+                    document.getElementById('unlock-modal').style.display = 'none';
+                    showResult();
+                }
+            });
+        }
+
+        function showBrands() {
+            document.getElementById('brand-selection').classList.remove('hidden');
+            document.getElementById('model-selection').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+        }
+
+        function showModels(brand) {
+            if (brand) currentBrand = brand;
+            document.getElementById('brand-selection').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('model-selection').classList.remove('hidden');
+            
+            const modelsGrid = document.getElementById('models-grid');
+            document.getElementById('brand-title').innerText = `${currentBrand} Models`;
+            modelsGrid.innerHTML = "";
+
+            Object.keys(phoneData[currentBrand]).forEach(model => {
+                const btn = document.createElement('div');
+                btn.className = "glass-card px-6 py-4 rounded-xl cursor-pointer flex justify-between items-center";
+                btn.innerHTML = `<span class="font-bold">${model}</span> <i class="fas fa-lock text-[#ff2e63]/50"></i>`;
+                btn.onclick = () => triggerUnlockPopup(model);
+                modelsGrid.appendChild(btn);
+            });
+        }
+
+        function triggerUnlockPopup(model) {
+            currentModel = model;
+            document.getElementById('unlock-model-hint').innerText = `${currentBrand} ${currentModel}`;
+            document.getElementById('unlock-modal').style.display = 'flex';
+        }
+
+        function handleSubscribeClick() {
+            // User has clicked the subscribe link. Set flag to unlock when they return to window.
+            isWaitingForUnlock = true;
+        }
+
+        function showResult() {
+            document.getElementById('model-selection').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            
+            document.getElementById('result-model-name').innerText = currentModel;
+            document.getElementById('result-brand-name').innerText = currentBrand;
+
+            const statsContainer = document.getElementById('stats-container');
+            statsContainer.innerHTML = "";
+
+            const values = phoneData[currentBrand][currentModel];
+            
+            values.forEach((val, index) => {
+                // 2X BOOST LOGIC
+                const doubledVal = val * 2;
+                
+                const statRow = document.createElement('div');
+                statRow.className = "mb-4";
+                statRow.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg font-bold flex items-center gap-2">
+                            ${icons[index]} ${labels[index]}
+                        </span>
+                        <span class="text-[#ff2e63] font-bold text-xl">${doubledVal}</span>
+                    </div>
+                    <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden">
+                        <div class="progress-bar-fill h-full bg-gradient-to-r from-[#ff2e63] via-[#ff6b6b] to-[#ff2e63]" 
+                             style="width: 0%"></div>
+                    </div>
+                `;
+                statsContainer.appendChild(statRow);
+
+                // Animate bars on load
+                setTimeout(() => {
+                    const percentage = Math.min((doubledVal / 200) * 100, 100);
+                    statRow.querySelector('.progress-bar-fill').style.width = percentage + '%';
+                }, 100);
+            });
+            
+            showToast("2X Sensitivity Unlocked!");
+        }
+
+        function copyToClipboard() {
+            const values = phoneData[currentBrand][currentModel].map(v => v * 2);
+            let text = `🔥 ${currentBrand} ${currentModel} 2X SENSITIVITY 🔥\n\n`;
+            labels.forEach((l, i) => {
+                text += `${icons[i]} ${l}: ${values[i]}\n`;
+            });
+            text += `\nCopied from Pro Sensitivity Hub`;
+
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            showToast("Copied to Clipboard!");
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#ff2e63] text-white px-8 py-3 rounded-full font-bold shadow-2xl z-[200] border border-white/20";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
