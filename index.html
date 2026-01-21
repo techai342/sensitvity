@@ -110,107 +110,11 @@
             background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
         }
 
-        /* Back Button */
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 46, 99, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 46, 99, 0.3);
-            color: #ff2e63;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 46, 99, 0.2);
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 46, 99, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 46, 99, 0.3);
-        }
-
         /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .back-btn {
-                top: 15px;
-                right: 15px;
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-            
-            .header-title { 
-                font-size: 1.875rem; 
-                margin-top: 20px;
-            }
-            
-            .chat-container { 
-                height: 300px; 
-            }
-            
-            input, button { 
-                font-size: 14px !important; 
-            }
-            
-            #sensitivityChart {
-                height: 250px !important;
-            }
-            
-            .glass-card {
-                padding: 15px !important;
-            }
-            
-            #ai-resultArea .glass-card {
-                padding: 10px !important;
-            }
-        }
-
         @media (max-width: 640px) {
-            .back-btn {
-                top: 10px;
-                right: 10px;
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-            
-            .header-title { 
-                font-size: 1.5rem; 
-            }
-            
-            main {
-                padding-top: 50px !important;
-            }
-            
-            .brands-grid {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 10px !important;
-            }
-            
-            .brands-grid h3 {
-                font-size: 16px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .back-btn {
-                padding: 5px 10px;
-                font-size: 11px;
-            }
-            
-            .brands-grid {
-                grid-template-columns: 1fr !important;
-            }
-            
-            #models-grid {
-                grid-template-columns: 1fr !important;
-            }
+            .header-title { font-size: 1.875rem; }
+            .chat-container { height: 300px; }
+            input, button { font-size: 14px !important; }
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -221,15 +125,9 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- Back Button -->
-    <a href="https://eman.zone.id/" class="back-btn" target="_blank">
-        <i class="fas fa-arrow-left"></i>
-        <span>Back to Eman Zone</span>
-    </a>
-
     <!-- Header -->
     <header class="py-6 px-4 border-b border-white/10 text-center">
-        <h1 class="text-4xl font-bold neon-text font-['Orbitron'] tracking-widest text-[#ff2e63] header-title">
+        <h1 class="text-4xl font-bold neon-text font-['Orbitron'] tracking-widest text-[#ff2e63]">
             PRO SENSITIVITY HUB
         </h1>
         <p class="text-gray-400 mt-2 font-bold uppercase tracking-widest">AI Powered + Database Settings</p>
@@ -306,7 +204,7 @@
                 <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
                     <i class="fas fa-mobile-alt text-[#ff2e63]"></i> Choose Brand
                 </h3>
-                <div id="brands-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 brands-grid">
+                <div id="brands-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <!-- Brands dynamically injected -->
                 </div>
             </section>
@@ -426,37 +324,11 @@
         // Register Chart.js Datalabels Plugin
         Chart.register(ChartDataLabels);
 
-        // Function to find if device exists in database
-        function findDeviceInDatabase(deviceName) {
-            const lowerDeviceName = deviceName.toLowerCase().trim();
-            
-            for (const brand in phoneData) {
-                for (const model in phoneData[brand]) {
-                    // Check exact match or partial match
-                    const lowerModel = model.toLowerCase();
-                    const lowerBrand = brand.toLowerCase();
-                    
-                    // Check if device name contains brand or model
-                    if (lowerDeviceName.includes(lowerBrand) && lowerDeviceName.includes(lowerModel) ||
-                        lowerDeviceName.includes(lowerModel) ||
-                        lowerDeviceName === lowerModel ||
-                        lowerDeviceName === `${lowerBrand} ${lowerModel}`) {
-                        return {
-                            brand: brand,
-                            model: model,
-                            sensitivity: phoneData[brand][model]
-                        };
-                    }
-                }
-            }
-            return null;
-        }
-
         function init() {
             const brandsGrid = document.getElementById('brands-grid');
             Object.keys(phoneData).forEach(brand => {
                 const btn = document.createElement('div');
-                btn.className = "glass-card p-6 rounded-2xl cursor-pointer text-center hover:border-[#ff2e63]/50 transition-all";
+                btn.className = "glass-card p-6 rounded-2xl cursor-pointer text-center";
                 btn.innerHTML = `<h3 class="text-xl font-bold uppercase tracking-wider">${brand}</h3>`;
                 btn.onclick = () => showModels(brand);
                 brandsGrid.appendChild(btn);
@@ -497,7 +369,7 @@
 
             Object.keys(phoneData[currentBrand]).forEach(model => {
                 const btn = document.createElement('div');
-                btn.className = "glass-card px-6 py-4 rounded-xl cursor-pointer flex justify-between items-center hover:border-[#ff2e63]/50 transition-all";
+                btn.className = "glass-card px-6 py-4 rounded-xl cursor-pointer flex justify-between items-center";
                 btn.innerHTML = `<span class="font-bold">${model}</span> <i class="fas fa-lock text-[#ff2e63]/50"></i>`;
                 btn.onclick = () => triggerUnlockPopup(model);
                 modelsGrid.appendChild(btn);
@@ -587,30 +459,20 @@
                 return;
             }
 
-            // Check if device exists in real database
-            const existingDevice = findDeviceInDatabase(device);
-            
-            if (existingDevice) {
-                // Device exists - show database sensitivity
-                aiDeviceName = device;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-                loading.classList.remove('hidden');
-                resultArea.classList.add('hidden');
+            aiDeviceName = device;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            loading.classList.remove('hidden');
+            resultArea.classList.add('hidden');
 
-                // Show unlock popup for AI results
-                setTimeout(() => {
-                    loading.classList.add('hidden');
-                    document.getElementById('ai-unlock-device-hint').innerText = device;
-                    document.getElementById('ai-unlock-modal').classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>Generate AI Settings</span><i class="fas fa-bolt-lightning"></i>';
-                }, 2000);
-            } else {
-                // Device doesn't exist
-                showToast("❌ This device does not exist in our database");
-                return;
-            }
+            // Show unlock popup for AI results
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                document.getElementById('ai-unlock-device-hint').innerText = device;
+                document.getElementById('ai-unlock-modal').classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<span>Generate AI Settings</span><i class="fas fa-bolt-lightning"></i>';
+            }, 2000);
         }
 
         function handleAISubscribeClick() {
@@ -618,41 +480,25 @@
         }
 
         function showAIResult() {
-            // Check if device exists in database and use real data
-            const existingDevice = findDeviceInDatabase(aiDeviceName);
+            // Generate AI settings (simulated for demo)
+            const mockAIData = {
+                general: Math.floor(Math.random() * 50) + 50,
+                redDot: Math.floor(Math.random() * 50) + 50,
+                scope2x: Math.floor(Math.random() * 50) + 50,
+                scope4x: Math.floor(Math.random() * 50) + 50,
+                awm: Math.floor(Math.random() * 50) + 50,
+                freeLook: Math.floor(Math.random() * 50) + 50,
+                advice: "AI recommends using these 2X boosted settings for optimal gameplay performance on " + aiDeviceName
+            };
             
-            if (existingDevice) {
-                // Use real database sensitivity
-                currentAIData = {
-                    general: existingDevice.sensitivity[0],
-                    redDot: existingDevice.sensitivity[1],
-                    scope2x: existingDevice.sensitivity[2],
-                    scope4x: existingDevice.sensitivity[3],
-                    awm: existingDevice.sensitivity[4],
-                    freeLook: existingDevice.sensitivity[5],
-                    advice: "AI recommends using these 2X boosted settings for optimal gameplay performance on " + aiDeviceName
-                };
-            } else {
-                // Fallback to mock data (shouldn't happen with our check)
-                const mockAIData = {
-                    general: Math.floor(Math.random() * 50) + 50,
-                    redDot: Math.floor(Math.random() * 50) + 50,
-                    scope2x: Math.floor(Math.random() * 50) + 50,
-                    scope4x: Math.floor(Math.random() * 50) + 50,
-                    awm: Math.floor(Math.random() * 50) + 50,
-                    freeLook: Math.floor(Math.random() * 50) + 50,
-                    advice: "AI recommends using these 2X boosted settings for optimal gameplay performance on " + aiDeviceName
-                };
-                currentAIData = mockAIData;
-            }
-            
+            currentAIData = mockAIData;
             const resultArea = document.getElementById('ai-resultArea');
             resultArea.classList.remove('hidden');
             
             document.getElementById('ai-resultTitle').innerText = aiDeviceName + " AI Settings";
             
             const aiLabels = ['General', 'Red Dot', '2x Scope', '4x Scope', 'AWM', 'Free Look'];
-            const values = [currentAIData.general, currentAIData.redDot, currentAIData.scope2x, currentAIData.scope4x, currentAIData.awm, currentAIData.freeLook].map(v => Number(v) * 2);
+            const values = [mockAIData.general, mockAIData.redDot, mockAIData.scope2x, mockAIData.scope4x, mockAIData.awm, mockAIData.freeLook].map(v => Number(v) * 2);
 
             document.getElementById('ai-statsGrid').innerHTML = aiLabels.map((label, i) => `
                 <div class="glass-card p-4 rounded-2xl border border-slate-700/50 text-center hover:border-[#ff2e63]/50 transition-all">
